@@ -1,19 +1,9 @@
 import "./App.css";
 import "@mantine/core/styles.css";
-import {
-  createBrowserRouter,
-  RouteObject,
-  RouterProvider,
-} from "react-router-dom";
-import Layout from "./components/layouts/Layout";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { MantineProvider } from "@mantine/core";
 
-const routes: RouteObject[] = [
-  {
-    path: "/",
-    element: <Layout />,
-  },
-];
+import routes from "./routes";
 
 const router = createBrowserRouter(routes);
 

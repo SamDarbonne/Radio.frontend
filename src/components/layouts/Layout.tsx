@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { AppShell, Burger } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-const { Header, Navbar, Main } = AppShell;
+import Navbar from "./Navbar";
+const { Header, Main } = AppShell;
 
 const Layout = () => {
   const [navbarOpen, { toggle }] = useDisclosure();
@@ -23,9 +24,9 @@ const Layout = () => {
           hiddenFrom="sm"
           size="sm"
         />
-        Header
+        <div>GC Radio</div>
       </Header>
-      <Navbar p="md">Navbar</Navbar>
+      <Navbar />
       <Main>
         <Outlet />
       </Main>
