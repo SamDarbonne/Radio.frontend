@@ -1,7 +1,7 @@
 export interface Media {
   id: string;
   title: string;
-  description: string;
+  artist: string;
   url: string;
   type: string;
   duration: number;
