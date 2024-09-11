@@ -1,10 +1,12 @@
 import "./App.css";
+import "@mantine/core/styles.css";
 import {
   createBrowserRouter,
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
+import { MantineProvider } from "@mantine/core";
 
 const routes: RouteObject[] = [
   {
@@ -16,7 +18,11 @@ const routes: RouteObject[] = [
 const router = createBrowserRouter(routes);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <MantineProvider>
+      <RouterProvider router={router} />
+    </MantineProvider>
+  );
 }
 
 export default App;
