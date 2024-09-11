@@ -4,11 +4,12 @@ import {
   RouteObject,
   RouterProvider,
 } from "react-router-dom";
+import Layout from "./components/layouts/Layout";
 
 const routes: RouteObject[] = [
   {
     path: "/",
-    element: <div>hello world</div>,
+    element: <Layout />,
   },
 ];
 
