@@ -1,7 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
-import { Home } from "./components";
-import api from "./fetch";
+import { Home, homeLoader } from "./components";
 
 type LabelledRoute = RouteObject & {
   label?: string;
@@ -17,7 +16,7 @@ export const labelledRoutes: LabelledRoute[] = [
         path: "/home",
         element: <Home />,
         label: "Home",
-        loader: api.media.get.all,
+        loader: () => homeLoader(1),
       },
     ],
   },

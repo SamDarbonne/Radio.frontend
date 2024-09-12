@@ -1,3 +1,7 @@
 .left-justify {
   text-align: left;
 }
+
+.media-table {
+  height: 200px;
+}

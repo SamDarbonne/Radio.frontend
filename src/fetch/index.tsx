@@ -1,4 +1,4 @@
-export interface Media {
+export interface MediaDocument {
   id: string;
   title: string;
   artist: string;
@@ -6,6 +6,12 @@ export interface Media {
   type: string;
   duration: number;
   createdAt: string;
+}
+
+export interface Media {
+  documents: MediaDocument[];
+  page: number;
+  totalPages: number;
 }
 
 type MethodOptions = "GET" | "POST" | "PUT" | "DELETE";
@@ -28,11 +34,12 @@ const fetchData = async (url: string, method: MethodOptions, body?: object) => {
     }
   } catch (error) {
     console.log(error);
+    return null;
   }
 };
 
-const getMedia: () => Promise<Media[]> = async () => {
-  return (await fetchData(`${baseUrl}/media`, "GET")) as Media[];
+const getMedia: (page: number) => Promise<Media> = async (page = 1) => {
+  return (await fetchData(`${baseUrl}/media?page=${page}`, "GET")) as Media;
 };
 
 export default {
