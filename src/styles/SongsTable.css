@@ -32,3 +32,12 @@
   width: 100%;
   table-layout: fixed;
 }
+
+.query-button-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.query-button {
+  margin: 10px;
+}

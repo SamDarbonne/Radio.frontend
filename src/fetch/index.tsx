@@ -14,6 +14,8 @@ export interface Media {
   totalPages: number;
 }
 
+export type Queries = "recent" | "popular";
+
 type MethodOptions = "GET" | "POST" | "PUT" | "DELETE";
 
 const baseUrl = "http://localhost:4000";
@@ -38,8 +40,14 @@ const fetchData = async (url: string, method: MethodOptions, body?: object) => {
   }
 };
 
-const getMedia: (page: number) => Promise<Media> = async (page = 1) => {
-  return (await fetchData(`${baseUrl}/media?page=${page}`, "GET")) as Media;
+const getMedia: (page: number, query: Queries) => Promise<Media> = async (
+  page = 1,
+  query = "recent"
+) => {
+  const queryObject = new URLSearchParams({ page: page.toString(), query });
+  const queryString = queryObject.toString();
+  console.log(`${baseUrl}/media${queryString}`);
+  return (await fetchData(`${baseUrl}/media?${queryString}`, "GET")) as Media;
 };
 
 export default {
