@@ -3,7 +3,7 @@ import api, { Media } from "../fetch";
 
 import "../styles/SongsTable.css";
 import { useEffect, useRef, useState, ReactElement } from "react";
-import { Table } from "@mantine/core";
+import { Button, Table } from "@mantine/core";
 
 export const loader = async (page: number = 1) => {
   const mediaData = await api.media.get.all(page);
@@ -20,7 +20,10 @@ const SongsTable: () => ReactElement = () => {
   const initialData = useLoaderData() as Media | null;
   const [totalPages, setTotalPages] = useState(initialData?.totalPages || 1);
   const [mediaData, setMediaData] = useState(initialData?.documents || []);
-  const [page, setPage] = useState(initialData?.page || 1);
+  const [pageQueryState, setPageQueryState] = useState({
+    query: "recent",
+    page: 1,
+  });
 
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 
@@ -28,7 +31,6 @@ const SongsTable: () => ReactElement = () => {
     const response = await loader(page);
     setTotalPages(response.totalPages);
     setMediaData((prevData) => [...prevData, ...response.documents]);
-    setPage(response.page);
   };
 
   useEffect(() => {
@@ -36,8 +38,8 @@ const SongsTable: () => ReactElement = () => {
       if (tableBodyRef.current) {
         const { scrollTop, scrollHeight, clientHeight } = tableBodyRef.current;
         if (scrollTop + clientHeight >= scrollHeight - 10) {
-          if (page < totalPages) {
-            setPage((prev) => prev + 1);
+          if (pageQueryState.page < totalPages) {
+            setPageQueryState((prev) => ({ ...prev, page: prev.page + 1 }));
           }
         }
       }
@@ -48,13 +50,14 @@ const SongsTable: () => ReactElement = () => {
       if (tbodyElement)
         tbodyElement.removeEventListener("scroll", handleScroll);
     };
-  }, [page, totalPages]);
+  }, [pageQueryState, totalPages]);
 
   useEffect(() => {
-    if (page > 1 && page <= totalPages) {
-      fetchMediaData(page);
+    if (pageQueryState.page > 1 && pageQueryState.page <= totalPages) {
+      fetchMediaData(pageQueryState.page);
     }
-  }, [page]);
+  }, [pageQueryState]);
+
   const rows = mediaData?.map((media) => (
     <Table.Tr key={`${media.title}-${media.artist}`}>
       <Table.Td className="left-justify">{media.title}</Table.Td>
@@ -62,9 +65,24 @@ const SongsTable: () => ReactElement = () => {
       <Table.Td>{formatDuration(media.duration)}</Table.Td>
     </Table.Tr>
   ));
+
+  const queryButtons = [{ label: "Recently Added", query: "recent" }];
+
+  const buttons = queryButtons.map(({ label, query }) => (
+    <Button
+      variant="default"
+      disabled={true}
+      key={query}
+      onClick={() => console.log(query)}
+    >
+      {label}
+    </Button>
+  ));
+
   return (
     <div className="songs-table">
       <Table className="media-table">
+        {buttons}
         <Table.Thead>
           <Table.Tr>
             <Table.Th>Title</Table.Th>
