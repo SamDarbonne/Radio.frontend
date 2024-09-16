@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import { Media } from "../fetch";
 import { Table } from "@mantine/core";
@@ -23,7 +23,8 @@ const Home: () => ReactElement = () => {
   const [totalPages, setTotalPages] = useState(initialData?.totalPages || 1);
   const [mediaData, setMediaData] = useState(initialData?.documents || []);
   const [page, setPage] = useState(initialData?.page || 1);
-  console.log(mediaData);
+
+  const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 
   const fetchMediaData = async (page: number) => {
     const response = await loader(page);
@@ -34,19 +35,23 @@ const Home: () => ReactElement = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (
-        window.innerHeight + document.documentElement.scrollTop !==
-        document.documentElement.offsetHeight
-      ) {
-        return;
-      }
-      if (page < totalPages) {
-        setPage((prevPage) => prevPage + 1);
+      if (tableBodyRef.current) {
+        const { scrollTop, scrollHeight, clientHeight } = tableBodyRef.current;
+        console.log(scrollTop, scrollHeight, clientHeight);
+        if (scrollTop + clientHeight >= scrollHeight - 10) {
+          if (page < totalPages) {
+            setPage((prev) => prev + 1);
+          }
+        }
       }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    const tbodyElement = tableBodyRef.current;
+    if (tbodyElement) tbodyElement.addEventListener("scroll", handleScroll);
+    return () => {
+      if (tbodyElement)
+        tbodyElement.removeEventListener("scroll", handleScroll);
+    };
+  }, [page, totalPages]);
 
   useEffect(() => {
     if (page > 1 && page <= totalPages) {
@@ -73,7 +78,10 @@ const Home: () => ReactElement = () => {
           </Table.Tr>
         </Table.Thead>
         {rows && (rows.length === 0 ? <div>No media found</div> : null)}
-        <Table.Tbody>{rows}</Table.Tbody>
+        <Table.Tbody ref={tableBodyRef} className="table-body">
+          {rows && (rows.length === 0 ? <div>No media found</div> : null)}
+          {rows}
+        </Table.Tbody>
       </Table>
     </div>
   );

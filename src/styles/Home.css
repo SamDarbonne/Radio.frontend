@@ -4,4 +4,31 @@
 
 .media-table {
   height: 200px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-body {
+  display: block;
+  max-height: 300px; /* Set the desired height */
+  overflow-y: auto;
+}
+
+.media-table th,
+.media-table td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.media-table thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.media-table tbody {
+  display: block;
+  width: 100%;
+  table-layout: fixed;
 }
