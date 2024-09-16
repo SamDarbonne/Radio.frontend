@@ -1,3 +1,4 @@
-import Home, { loader as homeLoader } from "./Home";
+import Home from "./Home";
+import SongsTable, { loader as songsTableLoader } from "./SongsTable";
 
-export { Home, homeLoader };
+export { Home, SongsTable, songsTableLoader };

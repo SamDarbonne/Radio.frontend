@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
-import { Home, homeLoader } from "./components";
+import { Home, SongsTable, songsTableLoader } from "./components";
 
 type LabelledRoute = RouteObject & {
   label?: string;
@@ -16,7 +16,14 @@ export const labelledRoutes: LabelledRoute[] = [
         path: "/home",
         element: <Home />,
         label: "Home",
-        loader: () => homeLoader(1),
+        // loader: () => homeLoader(),
+        children: [
+          {
+            element: <SongsTable />,
+            path: "",
+            loader: () => songsTableLoader(),
+          },
+        ],
       },
     ],
   },
