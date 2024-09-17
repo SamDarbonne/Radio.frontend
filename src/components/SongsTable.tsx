@@ -4,16 +4,11 @@ import api, { Media, Queries } from "../fetch";
 import "../styles/SongsTable.css";
 import { useEffect, useRef, ReactElement, useReducer } from "react";
 import { Button, Table } from "@mantine/core";
+import { formatDuration } from "../utils";
 
 export const loader = async (page: number = 1, query: Queries = "recent") => {
   const mediaData = await api.media.get.all(page, query);
   return mediaData;
-};
-
-const formatDuration = (duration: number): string => {
-  const minutes = Math.floor(duration / 60);
-  const seconds = Math.floor(duration % 60);
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
 };
 
 const SongsTable: () => ReactElement = () => {
@@ -50,7 +45,7 @@ const SongsTable: () => ReactElement = () => {
           totalPages: action.payload.totalPages,
         };
       case "SET_QUERY":
-        return { ...state, query: action.payload };
+        return { ...state, query: action.payload, page: 1 };
       default:
         return state;
     }
@@ -90,16 +85,22 @@ const SongsTable: () => ReactElement = () => {
           media:
             page === 1
               ? response.documents
-              : [...state.mediaData, ...response.documents],
+              : [...mediaData, ...response.documents],
           totalPages: response.totalPages,
         },
       });
     };
 
-    if (page > 1 && page <= totalPages) {
+    if ((page > 1 || mediaData.length > 0) && page <= totalPages) {
       fetchMediaData(page, query);
     }
-  }, [page, query]);
+  }, [page]);
+
+  useEffect(() => {
+    if (tableBodyRef.current) {
+      tableBodyRef.current.scrollTop = 0;
+    }
+  }, [query]);
 
   const rows = mediaData?.map((media) => (
     <Table.Tr key={`${media.title}-${media.artist}`}>
