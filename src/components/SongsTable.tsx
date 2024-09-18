@@ -1,14 +1,13 @@
 import { useLoaderData } from "react-router-dom";
-import api, { Media, Queries } from "../fetch";
+import api, { Media, Query } from "../fetch";
 
 import "../styles/SongsTable.css";
 import { useEffect, useRef, ReactElement, useReducer } from "react";
 import { Button, Table } from "@mantine/core";
 import { formatDuration } from "../utils";
 
-export const loader = async (page: number = 1, query: Queries = "recent") => {
-  const mediaData = await api.media.get.all(page, query);
-  return mediaData;
+export const loader = async (page: number = 1, query: Query = "recent") => {
+  return await api.media.get.all(page, query);
 };
 
 const SongsTable: () => ReactElement = () => {
@@ -18,7 +17,7 @@ const SongsTable: () => ReactElement = () => {
     totalPages: number;
     mediaData: Media["documents"];
     page: number;
-    query: Queries;
+    query: Query;
   } = {
     totalPages: initialData?.totalPages || 1,
     mediaData: initialData?.documents || [],
@@ -32,7 +31,7 @@ const SongsTable: () => ReactElement = () => {
         type: "SET_MEDIA_DATA";
         payload: { media: Media["documents"]; totalPages: number };
       }
-    | { type: "SET_QUERY"; payload: Queries };
+    | { type: "SET_QUERY"; payload: Query };
 
   const reducer = (state: typeof initialState, action: Action) => {
     switch (action.type) {
@@ -77,7 +76,7 @@ const SongsTable: () => ReactElement = () => {
   }, [page, totalPages]);
 
   useEffect(() => {
-    const fetchMediaData = async (page: number, query: Queries) => {
+    const fetchMediaData = async (page: number, query: Query) => {
       const response = await loader(page, query);
       dispatch({
         type: "SET_MEDIA_DATA",
@@ -91,10 +90,10 @@ const SongsTable: () => ReactElement = () => {
       });
     };
 
-    if ((page > 1 || mediaData.length > 0) && page <= totalPages) {
+    if (page <= totalPages) {
       fetchMediaData(page, query);
     }
-  }, [page]);
+  }, [page, query]);
 
   useEffect(() => {
     if (tableBodyRef.current) {
@@ -110,7 +109,7 @@ const SongsTable: () => ReactElement = () => {
     </Table.Tr>
   ));
 
-  const queryButtons: { label: string; query: Queries }[] = [
+  const queryButtons: { label: string; query: Query }[] = [
     { label: "Recently Added", query: "recent" },
     { label: "Popular", query: "popular" },
   ];

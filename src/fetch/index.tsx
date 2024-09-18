@@ -14,7 +14,7 @@ export interface Media {
   totalPages: number;
 }
 
-export type Queries = "recent" | "popular";
+export type Query = "recent" | "popular";
 
 type MethodOptions = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -40,7 +40,7 @@ const fetchData = async (url: string, method: MethodOptions, body?: object) => {
   }
 };
 
-const getMedia: (page: number, query: Queries) => Promise<Media> = async (
+const getMedia: (page: number, query: Query) => Promise<Media> = async (
   page = 1,
   query = "recent"
 ) => {

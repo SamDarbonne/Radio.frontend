@@ -25,6 +25,11 @@ export const labelledRoutes: LabelledRoute[] = [
           },
         ],
       },
+      {
+        path: "/artists",
+        element: <div>Artists</div>,
+        label: "Artists",
+      },
     ],
   },
 ];
