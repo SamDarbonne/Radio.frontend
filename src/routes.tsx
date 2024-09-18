@@ -1,6 +1,6 @@
 import { RouteObject } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
-import { Home, SongsTable, songsTableLoader } from "./components";
+import { Home, SongsTable, songsTableLoader, Upload } from "./components";
 
 type LabelledRoute = RouteObject & {
   label?: string;
@@ -24,6 +24,11 @@ export const labelledRoutes: LabelledRoute[] = [
             loader: () => songsTableLoader(),
           },
         ],
+      },
+      {
+        path: "/upload",
+        element: <Upload />,
+        label: "Upload",
       },
       {
         path: "/artists",

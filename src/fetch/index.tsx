@@ -1,35 +1,60 @@
-export interface MediaDocument {
-  id: string;
-  title: string;
-  artist: string;
+export interface SongDocument {
+  _id: string;
+  name: string;
+  artists: Partial<ArtistDocument>[];
   url: string;
   type: string;
   duration: number;
   createdAt: string;
 }
 
-export interface Media {
-  documents: MediaDocument[];
+export interface Song {
+  documents: SongDocument[];
   page: number;
   totalPages: number;
+  id: string;
 }
 
+export interface ArtistDocument {
+  _id: string;
+  name: string;
+  pseudonyms?: string[];
+  albums: AlbumDocument[];
+  dateAdded: Date;
+}
+
+export interface AlbumDocument {
+  name: string;
+  artist: string;
+  releaseDate: Date;
+  lastPlayed?: Date;
+  imageFilename?: string;
+}
 export type Query = "recent" | "popular";
 
 type MethodOptions = "GET" | "POST" | "PUT" | "DELETE";
 
 const baseUrl = "http://localhost:4000";
 
-const fetchData = async (url: string, method: MethodOptions, body?: object) => {
+const fetchData = async (
+  url: string,
+  method: MethodOptions,
+  body?: object | FormData
+) => {
   try {
     const options: RequestInit = {
       method,
-      headers: {
-        "Content-Type": "application/json",
-      },
     };
-    if (body) options.body = JSON.stringify(body);
-
+    if (body) {
+      if (body instanceof FormData) {
+        options.body = body;
+      } else {
+        options.headers = {
+          "Content-Type": "application/json",
+        };
+        options.body = JSON.stringify(body);
+      }
+    }
     const response = await fetch(url, options);
     if (response.ok) {
       return response.json();
@@ -40,22 +65,32 @@ const fetchData = async (url: string, method: MethodOptions, body?: object) => {
   }
 };
 
-const getMedia: (page: number, query: Query) => Promise<Media> = async (
+const uploadSongs = async (formData: FormData): Promise<Song[]> => {
+  console.log("uploading songs");
+  formData.forEach((value, key) => {
+    console.log(key, value);
+  });
+  return await fetchData(`${baseUrl}/songs`, "POST", formData);
+};
+
+const getSongs: (page: number, query: Query) => Promise<Song> = async (
   page = 1,
   query = "recent"
 ) => {
   const queryObject = new URLSearchParams({ page: page.toString(), query });
   const queryString = queryObject.toString();
-  console.log(`${baseUrl}/media${queryString}`);
-  return (await fetchData(`${baseUrl}/media?${queryString}`, "GET")) as Media;
+  console.log({ queryString });
+  console.log(`${baseUrl}/songs?${queryObject}`);
+  return (await fetchData(`${baseUrl}/songs?${queryString}`, "GET")) as Song;
 };
 
 export default {
-  media: {
+  songs: {
     get: {
       // one: getMediaById,
-      all: getMedia,
+      all: getSongs,
     },
+    upload: uploadSongs,
     // create: createMedia,
     // update: updateMedia,
     // delete: deleteMedia,

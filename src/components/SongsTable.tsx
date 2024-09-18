@@ -1,26 +1,26 @@
-import { useLoaderData } from "react-router-dom";
-import api, { Media, Query } from "../fetch";
+import { Link, useLoaderData } from "react-router-dom";
+import api, { Song, Query } from "../fetch";
 
 import "../styles/SongsTable.css";
 import { useEffect, useRef, ReactElement, useReducer } from "react";
-import { Button, Table } from "@mantine/core";
+import { ActionIcon, Button, Menu, Table } from "@mantine/core";
 import { formatDuration } from "../utils";
 
 export const loader = async (page: number = 1, query: Query = "recent") => {
-  return await api.media.get.all(page, query);
+  return await api.songs.get.all(page, query);
 };
 
 const SongsTable: () => ReactElement = () => {
-  const initialData = useLoaderData() as Media | null;
+  const initialData = useLoaderData() as Song | null;
 
   const initialState: {
     totalPages: number;
-    mediaData: Media["documents"];
+    songsData: Song["documents"];
     page: number;
     query: Query;
   } = {
     totalPages: initialData?.totalPages || 1,
-    mediaData: initialData?.documents || [],
+    songsData: initialData?.documents || [],
     page: 1,
     query: "recent",
   };
@@ -28,8 +28,8 @@ const SongsTable: () => ReactElement = () => {
   type Action =
     | { type: "INCREMENT_PAGE" }
     | {
-        type: "SET_MEDIA_DATA";
-        payload: { media: Media["documents"]; totalPages: number };
+        type: "SET_SONGS_DATA";
+        payload: { songs: Song["documents"]; totalPages: number };
       }
     | { type: "SET_QUERY"; payload: Query };
 
@@ -37,10 +37,10 @@ const SongsTable: () => ReactElement = () => {
     switch (action.type) {
       case "INCREMENT_PAGE":
         return { ...state, page: state.page + 1 };
-      case "SET_MEDIA_DATA":
+      case "SET_SONGS_DATA":
         return {
           ...state,
-          mediaData: action.payload.media,
+          songsData: action.payload.songs,
           totalPages: action.payload.totalPages,
         };
       case "SET_QUERY":
@@ -54,7 +54,7 @@ const SongsTable: () => ReactElement = () => {
 
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 
-  const { mediaData, totalPages, page, query } = state;
+  const { songsData: songsData, totalPages, page, query } = state;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,22 +76,23 @@ const SongsTable: () => ReactElement = () => {
   }, [page, totalPages]);
 
   useEffect(() => {
-    const fetchMediaData = async (page: number, query: Query) => {
+    const fetchSongsData = async (page: number, query: Query) => {
       const response = await loader(page, query);
+      console.log(response);
       dispatch({
-        type: "SET_MEDIA_DATA",
+        type: "SET_SONGS_DATA",
         payload: {
-          media:
+          songs:
             page === 1
               ? response.documents
-              : [...mediaData, ...response.documents],
+              : [...songsData, ...response.documents],
           totalPages: response.totalPages,
         },
       });
     };
 
     if (page <= totalPages) {
-      fetchMediaData(page, query);
+      fetchSongsData(page, query);
     }
   }, [page, query]);
 
@@ -100,12 +101,29 @@ const SongsTable: () => ReactElement = () => {
       tableBodyRef.current.scrollTop = 0;
     }
   }, [query]);
+  console.log(songsData);
+  const rows = songsData?.map((song) => (
+    <Table.Tr key={`${song.name}-${song.artists}`}>
+      <Table.Td className="left-justify">{song.name}</Table.Td>
+      <Table.Td className="left-justify">
+        {song.artists.map((artist) => (
+          <Link to={`/artists/${artist._id}`}>{artist.name}</Link>
+        ))}
+      </Table.Td>
+      <Table.Td>{formatDuration(song.duration)}</Table.Td>
+      <Table.Td>
+        <Menu shadow="md" width={200}>
+          <Menu.Target>
+            <ActionIcon variant="default">...</ActionIcon>
+          </Menu.Target>
 
-  const rows = mediaData?.map((media) => (
-    <Table.Tr key={`${media.title}-${media.artist}`}>
-      <Table.Td className="left-justify">{media.title}</Table.Td>
-      <Table.Td className="left-justify">{media.artist}</Table.Td>
-      <Table.Td>{formatDuration(media.duration)}</Table.Td>
+          <Menu.Dropdown>
+            <Menu.Item>Play</Menu.Item>
+            <Menu.Item>Edit</Menu.Item>
+            <Menu.Item color="red">Delete</Menu.Item>
+          </Menu.Dropdown>
+        </Menu>
+      </Table.Td>
     </Table.Tr>
   ));
 
@@ -132,15 +150,9 @@ const SongsTable: () => ReactElement = () => {
 
   return (
     <div className="songs-table">
-      <Table className="media-table">
-        {buttons}
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Title</Table.Th>
-            <Table.Th>Artist</Table.Th>
-            <Table.Th>Duration</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
+      {buttons}
+      <Table className="songs-table">
+        <Table.Thead></Table.Thead>
         <Table.Tbody ref={tableBodyRef} className="table-body">
           {rows}
         </Table.Tbody>
