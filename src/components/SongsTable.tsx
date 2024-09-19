@@ -1,26 +1,33 @@
-import { Link, useLoaderData } from "react-router-dom";
-import api, { Song, Query } from "../fetch";
+import { LoaderFunction, useLoaderData } from "react-router-dom";
+import api, { SongData, Query, SongDocument } from "../fetch";
 
 import "../styles/SongsTable.css";
 import { useEffect, useRef, ReactElement, useReducer } from "react";
-import { ActionIcon, Button, Menu, Table } from "@mantine/core";
-import { formatDuration } from "../utils";
+import { Button, Table } from "@mantine/core";
+import SongRow from "./SongRow";
 
-export const loader = async (page: number = 1, query: Query = "recent") => {
+const fetchData = async (page: number, query: Query) => {
   return await api.songs.get.all(page, query);
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const page = Number(url.searchParams.get("page")) || 1;
+  const query = (url.searchParams.get("query") as Query) || "recent";
+  return await fetchData(page, query);
+};
+
 const SongsTable: () => ReactElement = () => {
-  const initialData = useLoaderData() as Song | null;
+  const initialData = useLoaderData() as SongData | null;
 
   const initialState: {
     totalPages: number;
-    songsData: Song["documents"];
+    data: SongDocument[];
     page: number;
     query: Query;
   } = {
     totalPages: initialData?.totalPages || 1,
-    songsData: initialData?.documents || [],
+    data: initialData?.documents || [],
     page: 1,
     query: "recent",
   };
@@ -28,8 +35,8 @@ const SongsTable: () => ReactElement = () => {
   type Action =
     | { type: "INCREMENT_PAGE" }
     | {
-        type: "SET_SONGS_DATA";
-        payload: { songs: Song["documents"]; totalPages: number };
+        type: "SET_DATA";
+        payload: { songs: SongDocument[]; totalPages: number };
       }
     | { type: "SET_QUERY"; payload: Query };
 
@@ -37,10 +44,10 @@ const SongsTable: () => ReactElement = () => {
     switch (action.type) {
       case "INCREMENT_PAGE":
         return { ...state, page: state.page + 1 };
-      case "SET_SONGS_DATA":
+      case "SET_DATA":
         return {
           ...state,
-          songsData: action.payload.songs,
+          data: action.payload.songs,
           totalPages: action.payload.totalPages,
         };
       case "SET_QUERY":
@@ -54,7 +61,7 @@ const SongsTable: () => ReactElement = () => {
 
   const tableBodyRef = useRef<HTMLTableSectionElement>(null);
 
-  const { songsData: songsData, totalPages, page, query } = state;
+  const { data: data, totalPages, page, query } = state;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -76,23 +83,21 @@ const SongsTable: () => ReactElement = () => {
   }, [page, totalPages]);
 
   useEffect(() => {
-    const fetchSongsData = async (page: number, query: Query) => {
-      const response = await loader(page, query);
+    const updateData = async (page: number, query: Query) => {
+      const response = await fetchData(page, query);
       console.log(response);
       dispatch({
-        type: "SET_SONGS_DATA",
+        type: "SET_DATA",
         payload: {
           songs:
-            page === 1
-              ? response.documents
-              : [...songsData, ...response.documents],
+            page === 1 ? response.documents : [...data, ...response.documents],
           totalPages: response.totalPages,
         },
       });
     };
 
     if (page <= totalPages) {
-      fetchSongsData(page, query);
+      updateData(page, query);
     }
   }, [page, query]);
 
@@ -101,31 +106,8 @@ const SongsTable: () => ReactElement = () => {
       tableBodyRef.current.scrollTop = 0;
     }
   }, [query]);
-  console.log(songsData);
-  const rows = songsData?.map((song) => (
-    <Table.Tr key={`${song.name}-${song.artists}`}>
-      <Table.Td className="left-justify">{song.name}</Table.Td>
-      <Table.Td className="left-justify">
-        {song.artists.map((artist) => (
-          <Link to={`/artists/${artist._id}`}>{artist.name}</Link>
-        ))}
-      </Table.Td>
-      <Table.Td>{formatDuration(song.duration)}</Table.Td>
-      <Table.Td>
-        <Menu shadow="md" width={200}>
-          <Menu.Target>
-            <ActionIcon variant="default">...</ActionIcon>
-          </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Item>Play</Menu.Item>
-            <Menu.Item>Edit</Menu.Item>
-            <Menu.Item color="red">Delete</Menu.Item>
-          </Menu.Dropdown>
-        </Menu>
-      </Table.Td>
-    </Table.Tr>
-  ));
+  const rows = data?.map((song) => <SongRow song={song} />);
 
   const queryButtons: { label: string; query: Query }[] = [
     { label: "Recently Added", query: "recent" },

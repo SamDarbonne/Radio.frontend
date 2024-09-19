@@ -8,7 +8,7 @@ export interface SongDocument {
   createdAt: string;
 }
 
-export interface Song {
+export interface SongData {
   documents: SongDocument[];
   page: number;
   totalPages: number;
@@ -21,6 +21,12 @@ export interface ArtistDocument {
   pseudonyms?: string[];
   albums: AlbumDocument[];
   dateAdded: Date;
+}
+
+export interface ArtistData {
+  documents: ArtistDocument[];
+  page: number;
+  totalPages: number;
 }
 
 export interface AlbumDocument {
@@ -65,7 +71,7 @@ const fetchData = async (
   }
 };
 
-const uploadSongs = async (formData: FormData): Promise<Song[]> => {
+const uploadSongs = async (formData: FormData): Promise<SongData[]> => {
   console.log("uploading songs");
   formData.forEach((value, key) => {
     console.log(key, value);
@@ -73,7 +79,7 @@ const uploadSongs = async (formData: FormData): Promise<Song[]> => {
   return await fetchData(`${baseUrl}/songs`, "POST", formData);
 };
 
-const getSongs: (page: number, query: Query) => Promise<Song> = async (
+const getSongs: (page: number, query: Query) => Promise<SongData> = async (
   page = 1,
   query = "recent"
 ) => {
@@ -81,7 +87,28 @@ const getSongs: (page: number, query: Query) => Promise<Song> = async (
   const queryString = queryObject.toString();
   console.log({ queryString });
   console.log(`${baseUrl}/songs?${queryObject}`);
-  return (await fetchData(`${baseUrl}/songs?${queryString}`, "GET")) as Song;
+  return (await fetchData(
+    `${baseUrl}/songs?${queryString}`,
+    "GET"
+  )) as SongData;
+};
+
+const getArtists: (page: number, query: Query) => Promise<ArtistData> = async (
+  page = 1,
+  query = "recent"
+) => {
+  console.log("getArtists");
+  const queryObject = new URLSearchParams({ page: page.toString(), query });
+  const queryString = queryObject.toString();
+  return (await fetchData(
+    `${baseUrl}/artists?${queryString}`,
+    "GET"
+  )) as ArtistData;
+};
+
+const playSong = async (id: string) => {
+  console.log("playing song", id);
+  return await fetchData(`${baseUrl}/songs/${id}/play`, "POST");
 };
 
 export default {
@@ -94,5 +121,12 @@ export default {
     // create: createMedia,
     // update: updateMedia,
     // delete: deleteMedia,
+    play: playSong,
+  },
+  artists: {
+    get: {
+      all: getArtists,
+      // one: getArtist,
+    },
   },
 };

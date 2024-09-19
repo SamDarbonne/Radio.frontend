@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import api, { Song } from "../fetch";
+import api, { SongData } from "../fetch";
 
 const useFileUpload = (onSuccess: (uploadedIds: string[]) => void) => {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
@@ -13,19 +13,13 @@ const useFileUpload = (onSuccess: (uploadedIds: string[]) => void) => {
     if (!selectedFiles) return;
     const formData = new FormData();
 
-    // Array.from(selectedFiles).forEach((file) => {
-    //   console.log(file);
-    //   formData.append("files", file);
-    // });
-    for (let i = 0; i < selectedFiles.length; i++) {
-      formData.append("files", selectedFiles[i]);
-    }
-    for (const pair of formData.entries()) {
-      console.log(pair[0], pair[1]);
-    }
+    Array.from(selectedFiles).forEach((file) => {
+      console.log(file);
+      formData.append("files", file);
+    });
     try {
       const response = await api.songs.upload(formData);
-      const uploadedIds = response.map((media: Song) => media.id);
+      const uploadedIds = response.map((media: SongData) => media.id);
       onSuccess(uploadedIds);
 
       if (fileInputRef.current) {
