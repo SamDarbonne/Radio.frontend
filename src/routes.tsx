@@ -1,6 +1,13 @@
 import { RouteObject } from "react-router-dom";
 import Layout from "./components/layouts/Layout";
-import { Artists, Home, loaders, SongsTable, Upload } from "./components";
+import {
+  Artist,
+  Artists,
+  Home,
+  loaders,
+  SongsTable,
+  Upload,
+} from "./components";
 
 type LabelledRoute = RouteObject & {
   label?: string;
@@ -36,6 +43,11 @@ export const labelledRoutes: LabelledRoute[] = [
         element: <Artists />,
         label: "Artists",
         loader: loaders.artists,
+      },
+      {
+        path: "/artist/:id",
+        element: <Artist />,
+        loader: loaders.artist,
       },
     ],
   },

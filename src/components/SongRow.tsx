@@ -12,7 +12,7 @@ const SongRow = ({ row }: { row: SongDocument }) => {
       <Table.Td className="left-justify">{row.name}</Table.Td>
       <Table.Td className="left-justify">
         {row.artists.map((artist) => (
-          <Link to={`/artists/${artist._id}`}>{artist.name}</Link>
+          <Link to={`/artist/${artist._id}`}>{artist.name}</Link>
         ))}
       </Table.Td>
       <Table.Td>{formatDuration(row.duration)}</Table.Td>

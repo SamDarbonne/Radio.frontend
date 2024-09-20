@@ -106,6 +106,10 @@ const getArtists: (page: number, query: Query) => Promise<ArtistData> = async (
   )) as ArtistData;
 };
 
+const getArtist = async (id: string) => {
+  return await fetchData(`${baseUrl}/artists/${id}`, "GET");
+};
+
 const playSong = async (id: string) => {
   console.log("playing song", id);
   return await fetchData(`${baseUrl}/songs/${id}/play`, "POST");
@@ -126,7 +130,7 @@ export default {
   artists: {
     get: {
       all: getArtists,
-      // one: getArtist,
+      one: getArtist,
     },
   },
 };
