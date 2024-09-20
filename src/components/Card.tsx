@@ -27,7 +27,7 @@ const Card = ({ item }: CardProps) => {
     imageFilepath = item.album.imageFilename ?? "";
     title = item.name;
     subtitle =
-      item.album.artists?.map((artist) => artist.name).join(", ") ?? "unknown";
+      item.artists?.map((artist) => artist.name).join(", ") ?? "unknown";
     additionalInfo = (
       <p>
         Album: {item.album.name}
@@ -43,23 +43,19 @@ const Card = ({ item }: CardProps) => {
   }
   return (
     <div className="card">
-      <div className="card-header">
-        <h2>{title}</h2>
-      </div>
-      <div className="card-image">
-        {imageFilepath ? (
-          <img
-            src={`${BASE_URL}/images/${imageFilepath}`}
-            height="300px"
-            alt={title}
-          />
-        ) : (
-          <div className="placeholder-image">No Image Available</div>
-        )}
-      </div>
+      <div className="card-header">{title}</div>
       <div className="card-content">
-        <h3>{subtitle}</h3>
-        {additionalInfo}
+        <div className="card-image">
+          {imageFilepath ? (
+            <img src={`${BASE_URL}/images/${imageFilepath}`} alt={title} />
+          ) : (
+            <div className="placeholder-image">No Image Available</div>
+          )}
+        </div>
+        <div className="description">
+          <h3>{subtitle}</h3>
+          {additionalInfo}
+        </div>
       </div>
       <Barcode id={item._id} />
     </div>

@@ -21,6 +21,7 @@ const SongRowActions = ({ data }: { data: SongDocument }) => {
         onClose={close}
         withCloseButton={false}
         padding={"0px"}
+        withinPortal={true}
       >
         <Card item={data} />
       </Modal>

@@ -11,9 +11,11 @@ const SongRow = ({ row }: { row: SongDocument }) => {
     <Table.Tr key={`${row.name}-${row.artists}`}>
       <Table.Td className="left-justify">{row.name}</Table.Td>
       <Table.Td className="left-justify">
-        {row.artists.map((artist) => (
-          <Link to={`/artist/${artist._id}`}>{artist.name}</Link>
-        ))}
+        {row.artists.map((artist, index) => {
+          let linkName = artist.name;
+          if (index !== row.artists.length - 1) linkName += ", ";
+          return <Link to={`/artist/${artist._id}`}>{linkName}</Link>;
+        })}
       </Table.Td>
       <Table.Td>{formatDuration(row.duration)}</Table.Td>
       <Table.Td>
