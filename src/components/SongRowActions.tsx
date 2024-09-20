@@ -1,23 +1,37 @@
-import { Menu, ActionIcon } from "@mantine/core";
-import api from "../fetch";
+import { Menu, ActionIcon, Modal } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
-const SongRowActions = ({ id }: { id: string }) => {
+import api, { SongDocument } from "../fetch";
+import Card from "./Card";
+
+import "../styles/SongsTable.css";
+
+const SongRowActions = ({ data }: { data: SongDocument }) => {
+  const [opened, { open, close }] = useDisclosure(false);
+
   const handlePlay = () => {
     console.log("handling play");
-    api.songs.play(id);
+    api.songs.play(data._id);
   };
-  return (
-    <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <ActionIcon variant="default">...</ActionIcon>
-      </Menu.Target>
 
-      <Menu.Dropdown>
-        <Menu.Item onClick={handlePlay}>Play</Menu.Item>
-        <Menu.Item>Edit</Menu.Item>
-        <Menu.Item color="red">Delete</Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+  return (
+    <>
+      <Modal opened={opened} onClose={close} withCloseButton={false}>
+        <Card item={data} />
+      </Modal>
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <ActionIcon variant="default">...</ActionIcon>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item onClick={handlePlay}>Play</Menu.Item>
+          <Menu.Item>Edit</Menu.Item>
+          <Menu.Item onClick={open}>Show Card</Menu.Item>
+          <Menu.Item color="red">Delete</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 };
 

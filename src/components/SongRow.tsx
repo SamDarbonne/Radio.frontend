@@ -17,7 +17,7 @@ const SongRow = ({ row }: { row: SongDocument }) => {
       </Table.Td>
       <Table.Td>{formatDuration(row.duration)}</Table.Td>
       <Table.Td>
-        <SongRowActions id={row._id} />
+        <SongRowActions data={row} />
       </Table.Td>
     </Table.Tr>
   );
