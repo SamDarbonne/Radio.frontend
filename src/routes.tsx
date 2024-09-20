@@ -20,6 +20,7 @@ export const labelledRoutes: LabelledRoute[] = [
         children: [
           {
             element: <SongsTable />,
+            // element: <SongsTable />,
             path: "",
             loader: loaders.songsTable,
           },

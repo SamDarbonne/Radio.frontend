@@ -6,18 +6,18 @@ import { Table } from "@mantine/core";
 import { formatDuration } from "../utils";
 import SongRowActions from "./SongRowActions";
 
-const SongRow = ({ song }: { song: SongDocument }) => {
+const SongRow = ({ row }: { row: SongDocument }) => {
   return (
-    <Table.Tr key={`${song.name}-${song.artists}`}>
-      <Table.Td className="left-justify">{song.name}</Table.Td>
+    <Table.Tr key={`${row.name}-${row.artists}`}>
+      <Table.Td className="left-justify">{row.name}</Table.Td>
       <Table.Td className="left-justify">
-        {song.artists.map((artist) => (
+        {row.artists.map((artist) => (
           <Link to={`/artists/${artist._id}`}>{artist.name}</Link>
         ))}
       </Table.Td>
-      <Table.Td>{formatDuration(song.duration)}</Table.Td>
+      <Table.Td>{formatDuration(row.duration)}</Table.Td>
       <Table.Td>
-        <SongRowActions id={song._id} />
+        <SongRowActions id={row._id} />
       </Table.Td>
     </Table.Tr>
   );
