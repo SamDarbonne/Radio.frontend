@@ -16,7 +16,12 @@ const SongRowActions = ({ data }: { data: SongDocument }) => {
 
   return (
     <>
-      <Modal opened={opened} onClose={close} withCloseButton={false}>
+      <Modal
+        opened={opened}
+        onClose={close}
+        withCloseButton={false}
+        padding={"0px"}
+      >
         <Card item={data} />
       </Modal>
       <Menu shadow="md" width={200}>

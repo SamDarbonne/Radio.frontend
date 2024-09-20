@@ -2,6 +2,8 @@ import { AlbumDocument, BASE_URL, SongDocument } from "../fetch";
 import { formatDuration } from "../utils";
 import Barcode from "./Barcode";
 
+import "../styles/Card.scss";
+
 type CardProps = {
   item: SongDocument | AlbumDocument;
   // | PlaylistDocument
