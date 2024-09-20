@@ -5,6 +5,7 @@
   overflow: hidden;
   margin: 16px;
   font-family: Arial, sans-serif;
+  padding: 0;
 }
 
 .card-header {

@@ -1,5 +1,6 @@
 import { AlbumDocument, BASE_URL, SongDocument } from "../fetch";
 import { formatDuration } from "../utils";
+import Barcode from "./Barcode";
 
 type CardProps = {
   item: SongDocument | AlbumDocument;
@@ -58,6 +59,7 @@ const Card = ({ item }: CardProps) => {
         <h3>{subtitle}</h3>
         {additionalInfo}
       </div>
+      <Barcode id={item._id} />
     </div>
   );
 };

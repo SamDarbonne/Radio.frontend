@@ -31,6 +31,7 @@ export interface ArtistData {
 }
 
 export interface AlbumDocument {
+  _id: string;
   name: string;
   artists: Partial<ArtistDocument>[];
   releaseDate: Date;
