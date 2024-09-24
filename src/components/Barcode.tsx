@@ -11,6 +11,7 @@ const Barcode = ({ id }: { id: string }) => {
         displayValue: false,
         width: 1,
         height: 40,
+        margin: 0,
       });
     }
   }, [id]);

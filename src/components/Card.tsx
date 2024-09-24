@@ -29,17 +29,23 @@ const Card = ({ item }: CardProps) => {
     subtitle =
       item.artists?.map((artist) => artist.name).join(", ") ?? "unknown";
     additionalInfo = (
-      <p>
-        Album: {item.album.name}
-        <br />
-        Duration: {formatDuration(item.duration)}
-      </p>
+      <div className="additional-info">
+        <div>
+          <div className="label">Album:</div>
+          <div className="value">{item.album.name}</div>
+        </div>
+        <div>Duration: {formatDuration(item.duration)}</div>
+      </div>
     );
   } else if (isAlbum(item)) {
     imageFilepath = item.imageFilename ?? "";
     title = item.name;
     subtitle = item.artists.map((artist) => artist.name).join(", ");
-    additionalInfo = <p>Release Date: {item.releaseDate.toString()}</p>;
+    additionalInfo = (
+      <div className="additional-info">
+        Release Date: {item.releaseDate.toString()}
+      </div>
+    );
   }
   return (
     <div className="card">
@@ -53,7 +59,7 @@ const Card = ({ item }: CardProps) => {
           )}
         </div>
         <div className="description">
-          <h3>{subtitle}</h3>
+          <div className="subtitle">{subtitle}</div>
           {additionalInfo}
         </div>
       </div>
