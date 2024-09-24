@@ -7,30 +7,38 @@
   border-collapse: collapse;
   width: 100%;
 }
+th,
+td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+tbody {
+  display: block;
+  width: 100%;
+  table-layout: fixed;
+}
 
 .table-body {
   display: block;
   max-height: 300px; /* Set the desired height */
   overflow-y: auto;
-}
 
-.media-table th,
-.media-table td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
+  .row-2 {
+    width: 20px;
+    max-width: 150px;
+  }
 
-.media-table thead {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
-.media-table tbody {
-  display: block;
-  width: 100%;
-  table-layout: fixed;
+  .overflow-row {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .query-button-row {

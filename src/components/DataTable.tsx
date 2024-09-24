@@ -1,6 +1,6 @@
 import { Query } from "../fetch";
 
-import "../styles/SongsTable.css";
+import "../styles/SongsTable.scss";
 import { useEffect, useRef, useReducer } from "react";
 import { Button, Table } from "@mantine/core";
 
@@ -131,9 +131,9 @@ const DataTable = <T,>({
   );
 
   return (
-    <div className="songs-table">
+    <div className="data-table">
       {buttons}
-      <Table className="songs-table">
+      <Table className="media-table">
         <Table.Thead></Table.Thead>
         <Table.Tbody ref={tableBodyRef} className="table-body">
           {rows}

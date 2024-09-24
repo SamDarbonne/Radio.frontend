@@ -1,6 +1,6 @@
 import { LoaderFunction, useLoaderData } from "react-router-dom";
 import api, { ArtistData, Query } from "../fetch";
-import "../styles/SongsTable.css";
+import "../styles/SongsTable.scss";
 import DataTable from "./DataTable";
 import { ArtistRow } from "./ArtistRow";
 

@@ -4,7 +4,7 @@ import { useDisclosure } from "@mantine/hooks";
 import api, { SongDocument } from "../fetch";
 import Card from "./Card";
 
-import "../styles/SongsTable.css";
+import "../styles/SongsTable.scss";
 
 const SongRowActions = ({ data }: { data: SongDocument }) => {
   const [opened, { open, close }] = useDisclosure(false);

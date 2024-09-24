@@ -15,7 +15,7 @@ const Barcode = ({ id }: { id: string }) => {
       });
     }
   }, [id]);
-  return <canvas ref={canvasRef} />;
+  return <canvas className="barcode" ref={canvasRef} />;
 };
 
 export default Barcode;

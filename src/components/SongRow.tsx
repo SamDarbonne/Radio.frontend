@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { SongDocument } from "../fetch";
 
-import "../styles/SongsTable.css";
-import { Table } from "@mantine/core";
+import "../styles/SongsTable.scss";
+import { Table, Tooltip } from "@mantine/core";
 import { formatDuration } from "../utils";
 import SongRowActions from "./SongRowActions";
 
@@ -16,6 +16,11 @@ const SongRow = ({ row }: { row: SongDocument }) => {
           if (index !== row.artists.length - 1) linkName += ", ";
           return <Link to={`/artist/${artist._id}`}>{linkName}</Link>;
         })}
+      </Table.Td>
+      <Table.Td className="overflow-row row-2">
+        <Tooltip label={row.album.name} position="left">
+          <Link to={`/album/${row.album._id}`}>{row.album.name}</Link>
+        </Tooltip>
       </Table.Td>
       <Table.Td>{formatDuration(row.duration)}</Table.Td>
       <Table.Td>

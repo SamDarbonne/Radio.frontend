@@ -38,6 +38,13 @@ export interface AlbumDocument {
   lastPlayed?: Date;
   imageFilename?: string;
 }
+
+export interface AlbumData {
+  documents: AlbumDocument[];
+  page: number;
+  totalPages: number;
+}
+
 export type Query = "recent" | "popular";
 
 type MethodOptions = "GET" | "POST" | "PUT" | "DELETE";
@@ -108,6 +115,25 @@ const getArtists: (page: number, query: Query) => Promise<ArtistData> = async (
   )) as ArtistData;
 };
 
+const getAlbums: (page: number, query: Query) => Promise<AlbumData> = async (
+  page = 1,
+  query = "recent"
+) => {
+  console.log("getArtists");
+  const queryObject = new URLSearchParams({ page: page.toString(), query });
+  const queryString = queryObject.toString();
+  return (await fetchData(
+    `${BASE_URL}/albums?${queryString}`,
+    "GET"
+  )) as AlbumData;
+};
+
+const getAlbumById: (id: string) => Promise<AlbumDocument> = async (
+  id: string
+) => {
+  return (await fetchData(`${BASE_URL}/albums/${id}`, "GET")) as AlbumDocument;
+};
+
 const getArtist = async (id: string) => {
   return await fetchData(`${BASE_URL}/artists/${id}`, "GET");
 };
@@ -133,6 +159,12 @@ export default {
     get: {
       all: getArtists,
       one: getArtist,
+    },
+  },
+  albums: {
+    get: {
+      all: getAlbums,
+      one: getAlbumById,
     },
   },
 };
