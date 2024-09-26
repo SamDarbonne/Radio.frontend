@@ -16,7 +16,11 @@ const DataTable = <T,>({
 }: {
   initialData: DataResponse<T>;
   rowElement: ({ row }: { row: T }) => JSX.Element;
-  dataLoader: (page: number, query: Query) => Promise<DataResponse<T>>;
+  dataLoader: (
+    page: number,
+    query: Query,
+    id?: string
+  ) => Promise<DataResponse<T>>;
 }) => {
   const initialState: {
     totalPages: number;

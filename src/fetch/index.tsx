@@ -34,6 +34,7 @@ export interface AlbumDocument {
   _id: string;
   name: string;
   artists: Partial<ArtistDocument>[];
+  songs: Partial<SongDocument>[];
   releaseDate: Date;
   lastPlayed?: Date;
   imageFilename?: string;
@@ -81,10 +82,6 @@ const fetchData = async (
 };
 
 const uploadSongs = async (formData: FormData): Promise<SongData[]> => {
-  console.log("uploading songs");
-  formData.forEach((value, key) => {
-    console.log(key, value);
-  });
   return await fetchData(`${BASE_URL}/songs`, "POST", formData);
 };
 
@@ -94,8 +91,6 @@ const getSongs: (page: number, query: Query) => Promise<SongData> = async (
 ) => {
   const queryObject = new URLSearchParams({ page: page.toString(), query });
   const queryString = queryObject.toString();
-  console.log({ queryString });
-  console.log(`${BASE_URL}/songs?${queryObject}`);
   return (await fetchData(
     `${BASE_URL}/songs?${queryString}`,
     "GET"
@@ -106,7 +101,6 @@ const getArtists: (page: number, query: Query) => Promise<ArtistData> = async (
   page = 1,
   query = "recent"
 ) => {
-  console.log("getArtists");
   const queryObject = new URLSearchParams({ page: page.toString(), query });
   const queryString = queryObject.toString();
   return (await fetchData(
@@ -119,11 +113,19 @@ const getAlbums: (page: number, query: Query) => Promise<AlbumData> = async (
   page = 1,
   query = "recent"
 ) => {
-  console.log("getArtists");
   const queryObject = new URLSearchParams({ page: page.toString(), query });
   const queryString = queryObject.toString();
   return (await fetchData(
     `${BASE_URL}/albums?${queryString}`,
+    "GET"
+  )) as AlbumData;
+};
+
+const getAlbumsByArtist = async (id: string, page: number, query: Query) => {
+  const queryObject = new URLSearchParams({ page: page.toString(), query });
+  const queryString = queryObject.toString();
+  return (await fetchData(
+    `${BASE_URL}/albums/artist/${id}?${queryString}`,
     "GET"
   )) as AlbumData;
 };
@@ -143,10 +145,14 @@ const playSong = async (id: string) => {
   return await fetchData(`${BASE_URL}/songs/${id}/play`, "POST");
 };
 
+const getSongById = async (id: string) => {
+  return await fetchData(`${BASE_URL}/songs/${id}`, "GET");
+};
+
 export default {
   songs: {
     get: {
-      // one: getMediaById,
+      one: getSongById,
       all: getSongs,
     },
     upload: uploadSongs,
@@ -165,6 +171,7 @@ export default {
     get: {
       all: getAlbums,
       one: getAlbumById,
+      artist: getAlbumsByArtist,
     },
   },
 };
