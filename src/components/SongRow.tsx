@@ -17,11 +17,14 @@ const SongRow = ({ row }: { row: SongDocument }) => {
           return <Link to={`/artist/${artist._id}`}>{linkName}</Link>;
         })}
       </Table.Td>
-      <Table.Td className="overflow-row row-2">
-        <Tooltip label={row.album.name} position="left">
-          <Link to={`/album/${row.album._id}`}>{row.album.name}</Link>
-        </Tooltip>
-      </Table.Td>
+      {row.album.name && (
+        <Table.Td className="overflow-row row-2">
+          <Tooltip label={row.album.name} position="left">
+            <Link to={`/album/${row.album._id}`}>{row.album.name}</Link>
+          </Tooltip>
+        </Table.Td>
+      )}
+
       <Table.Td>{formatDuration(row.duration)}</Table.Td>
       <Table.Td>
         <SongRowActions data={row} />

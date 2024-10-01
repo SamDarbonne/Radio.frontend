@@ -1,26 +1,27 @@
-import { Query } from "../fetch";
+import { PaginatedData, Query } from "../fetch";
 
 import "../styles/SongsTable.scss";
 import { useEffect, useRef, useReducer } from "react";
 import { Button, Table } from "@mantine/core";
+import {
+  DragDropContext,
+  Draggable,
+  Droppable,
+  DropResult,
+} from "@hello-pangea/dnd";
 
-type DataResponse<T> = {
-  documents: T[];
-  totalPages: number;
-};
-
-const DataTable = <T,>({
+const DataTable = <T extends { _id: string }>({
   initialData,
   dataLoader,
+  showQueryButtons = true,
   rowElement,
+  reorder,
 }: {
-  initialData: DataResponse<T>;
+  initialData: PaginatedData<T>;
   rowElement: ({ row }: { row: T }) => JSX.Element;
-  dataLoader: (
-    page: number,
-    query: Query,
-    id?: string
-  ) => Promise<DataResponse<T>>;
+  showQueryButtons?: boolean;
+  dataLoader: (page: number, query: Query) => Promise<PaginatedData<T>>;
+  reorder?: (items: string[], page: number) => void;
 }) => {
   const initialState: {
     totalPages: number;
@@ -103,7 +104,7 @@ const DataTable = <T,>({
     if (page <= totalPages) {
       updateData(page, query);
     }
-  }, [page, query]);
+  }, [page, query, initialData]);
 
   useEffect(() => {
     if (tableBodyRef.current) {
@@ -111,7 +112,9 @@ const DataTable = <T,>({
     }
   }, [query]);
 
-  const rows = data?.map((row) => rowElement({ row }));
+  const rows = reorder
+    ? data?.map((row) => <div>{rowElement({ row })}</div>)
+    : data?.map((row) => rowElement({ row }));
 
   const queryButtons: { label: string; query: Query }[] = [
     { label: "Recently Added", query: "recent" },
@@ -134,15 +137,63 @@ const DataTable = <T,>({
     </div>
   );
 
+  const content = (
+    <Table className="media-table">
+      <Table.Thead></Table.Thead>
+      <Table.Tbody ref={tableBodyRef} className="table-body">
+        {rows}
+      </Table.Tbody>
+    </Table>
+  );
+
+  const handleReorder = (result: DropResult) => {
+    if (!result.destination) return;
+    const items = Array.from(data);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+    reorder!(
+      items.map((i) => i._id),
+      page
+    );
+  };
+
   return (
     <div className="data-table">
-      {buttons}
-      <Table className="media-table">
-        <Table.Thead></Table.Thead>
-        <Table.Tbody ref={tableBodyRef} className="table-body">
-          {rows}
-        </Table.Tbody>
-      </Table>
+      {showQueryButtons && buttons}
+      {reorder ? (
+        <Table className="media-table draggable">
+          <Table.Thead></Table.Thead>
+          <Table.Tbody ref={tableBodyRef} className="table-body">
+            <DragDropContext onDragEnd={handleReorder}>
+              <Droppable droppableId="droppable">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef}>
+                    {data.map((row, index) => (
+                      <Draggable
+                        key={row._id + index.toString()}
+                        draggableId={row._id + "-" + index.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                          >
+                            {rowElement({ row })}
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </Table.Tbody>
+        </Table>
+      ) : (
+        content
+      )}
     </div>
   );
 };

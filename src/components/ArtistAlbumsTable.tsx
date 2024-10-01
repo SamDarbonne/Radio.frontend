@@ -2,7 +2,7 @@ import { LoaderFunction, useLoaderData } from "react-router-dom";
 import api, { Query, AlbumData } from "../fetch";
 
 import "../styles/SongsTable.scss";
-import { ReactElement } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import DataTable from "./DataTable";
 import ArtistAlbumsRow from "./ArtistAlbumsRow";
 
@@ -20,10 +20,22 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 const SongsTable: (props: { id: string }) => ReactElement = ({ id }) => {
   const initialData = useLoaderData() as AlbumData | null;
-  if (!initialData) return <div>Loading...</div>;
+  const [loadedData, setLoadedData] = useState<AlbumData | null>(initialData);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getFetchData(id)(1, "recent");
+      setLoadedData(data);
+    };
+
+    if (id) fetchData();
+  }, [id]);
+
+  if (!loadedData) return <div>Loading...</div>;
+
   return (
     <DataTable
-      initialData={initialData!}
+      initialData={loadedData}
       dataLoader={getFetchData(id)}
       rowElement={ArtistAlbumsRow}
     />

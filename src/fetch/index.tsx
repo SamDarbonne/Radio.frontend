@@ -9,11 +9,21 @@ export interface SongDocument {
   createdAt: string;
 }
 
-export interface SongData {
-  documents: SongDocument[];
+export interface PaginatedData<T> {
   page: number;
   totalPages: number;
+  documents: T[];
+}
+
+export type SongData = PaginatedData<SongDocument>;
+export type ArtistData = PaginatedData<ArtistDocument>;
+export type AlbumData = PaginatedData<AlbumDocument>;
+export type PlaylistsData = PaginatedData<PlaylistDocument>;
+export interface PlaylistData extends PaginatedData<SongDocument> {
+  theme: string;
   id: string;
+  name: string;
+  dateAdded: string;
 }
 
 export interface ArtistDocument {
@@ -22,12 +32,6 @@ export interface ArtistDocument {
   pseudonyms?: string[];
   albums: AlbumDocument[];
   dateAdded: Date;
-}
-
-export interface ArtistData {
-  documents: ArtistDocument[];
-  page: number;
-  totalPages: number;
 }
 
 export interface AlbumDocument {
@@ -40,10 +44,14 @@ export interface AlbumDocument {
   imageFilename?: string;
 }
 
-export interface AlbumData {
-  documents: AlbumDocument[];
+export interface PlaylistDocument {
+  _id: string;
+  name: string;
+  songs: SongDocument[];
+  theme: string;
   page: number;
   totalPages: number;
+  dateAdded: Date;
 }
 
 export type Query = "recent" | "popular";
@@ -149,6 +157,55 @@ const getSongById = async (id: string) => {
   return await fetchData(`${BASE_URL}/songs/${id}`, "GET");
 };
 
+const getPlaylists: (
+  page?: number,
+  query?: Query
+) => Promise<PlaylistsData> = async (page = 1, query = "recent") => {
+  const queryObject = new URLSearchParams({ page: page.toString(), query });
+  const queryString = queryObject.toString();
+  return (await fetchData(
+    `${BASE_URL}/playlists?${queryString}`,
+    "GET"
+  )) as PlaylistsData;
+};
+
+const getPlaylistById: (
+  id: string,
+  page: number
+) => Promise<PlaylistData> = async (id: string, page: number) => {
+  console.log({ id, page });
+  const queryObject = new URLSearchParams({ page: page.toString() });
+  const queryString = queryObject.toString();
+  return (await fetchData(
+    `${BASE_URL}/playlists/${id}?${queryString}`,
+    "GET"
+  )) as PlaylistData;
+};
+
+const deletePlaylist = async (id: string) => {
+  return await fetchData(`${BASE_URL}/playlists/${id}`, "DELETE");
+};
+
+const createPlaylist = async (formData?: FormData) => {
+  return await fetchData(`${BASE_URL}/playlists`, "POST", formData);
+};
+
+const updatePlaylist = async (
+  id: string,
+  { songs, page }: { songs: string[]; page: number }
+) => {
+  return await fetchData(`${BASE_URL}/playlists/${id}`, "PUT", {
+    songs,
+    page,
+  });
+};
+
+const addSongToPlaylist = async (songId: string, playlistId: string) => {
+  return await fetchData(`${BASE_URL}/playlists/${playlistId}/song`, "POST", {
+    songId,
+  });
+};
+
 export default {
   songs: {
     get: {
@@ -166,6 +223,16 @@ export default {
       all: getArtists,
       one: getArtist,
     },
+  },
+  playlists: {
+    get: {
+      all: getPlaylists,
+      one: getPlaylistById,
+    },
+    delete: deletePlaylist,
+    create: createPlaylist,
+    update: updatePlaylist,
+    addSongToPlaylist,
   },
   albums: {
     get: {

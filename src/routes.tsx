@@ -7,6 +7,8 @@ import {
   loaders,
   SongsTable,
   Upload,
+  Playlists,
+  Playlist,
 } from "./components";
 
 type LabelledRoute = RouteObject & {
@@ -43,6 +45,17 @@ export const labelledRoutes: LabelledRoute[] = [
         element: <Artists />,
         label: "Artists",
         loader: loaders.artists,
+      },
+      {
+        path: "/playlists",
+        element: <Playlists />,
+        label: "Playlists",
+        loader: loaders.playlists,
+      },
+      {
+        path: "/playlists/:id",
+        element: <Playlist />,
+        loader: loaders.playlist,
       },
       {
         path: "/artist/:id",

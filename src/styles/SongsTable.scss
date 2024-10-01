@@ -24,9 +24,13 @@ tbody {
   table-layout: fixed;
 }
 
+.mantine-Modal-inner {
+  left: 0;
+}
+
 .table-body {
   display: block;
-  max-height: 300px; /* Set the desired height */
+  max-height: 300px;
   overflow-y: auto;
 
   .row-2 {
